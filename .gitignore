@@ -1,0 +1,14 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.env*
+*.local
+.expo/
+ios/
+android/
+build/
+*.ipa
+*.p12
+*.mobileprovision
+credentials.json

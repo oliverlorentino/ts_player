@@ -1,0 +1,60 @@
+name: Build iPhone IPA for personal sideloading
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "App.tsx"
+      - "index.js"
+      - "src/**"
+      - "scripts/**"
+      - "assets/**"
+      - "package*.json"
+      - "app.json"
+      - "tsconfig.json"
+      - ".github/workflows/ios-unsigned.yml"
+concurrency:
+  group: ios-unsigned-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      CI: "1"
+      EXPO_NO_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Generate native iOS project
+        run: npx expo prebuild --platform ios --no-install
+      - name: Install CocoaPods
+        working-directory: ios
+        run: pod install --repo-update
+      - name: Build unsigned device archive
+        run: >-
+          xcodebuild -workspace ios/Still.xcworkspace -scheme Still
+          -configuration Release -sdk iphoneos -destination 'generic/platform=iOS'
+          -archivePath "$RUNNER_TEMP/Still.xcarchive" archive
+          CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Package IPA
+        run: |
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          ditto "$RUNNER_TEMP/Still.xcarchive/Products/Applications/Still.app" "$RUNNER_TEMP/ipa/Payload/Still.app"
+          cd "$RUNNER_TEMP/ipa"
+          /usr/bin/zip -qry "$GITHUB_WORKSPACE/Still-unsigned.ipa" Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Still-iPhone-unsigned
+          path: Still-unsigned.ipa
+          retention-days: 7

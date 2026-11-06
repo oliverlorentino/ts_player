@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Still",
+    "slug": "still-player",
+    "version": "0.1.0",
+    "scheme": "still",
+    "icon": "./assets/icon.png",
+    "orientation": "default",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": false,
+    "ios": {
+      "bundleIdentifier": "com.still.personalplayer",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "连接你局域网中的 Jellyfin 服务器，浏览和播放私人媒体库。",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        },
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      "react-native-vlc-media-player",
+      "expo-secure-store",
+      "expo-screen-orientation",
+      "expo-font"
+    ],
+    "assetBundlePatterns": ["assets/**/*"]
+  }
+}
