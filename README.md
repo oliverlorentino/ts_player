@@ -6,9 +6,9 @@
 
 已实现 Jellyfin 登录、媒体库/文件夹逐层浏览、搜索、分页、继续观看、自定义播放控件、手势、码率/网络缓冲设置、音轨/字幕选择与播放进度同步。源码包含免费的 Apple ID 侧载构建路线。
 
-**还没有生成并验证可安装 IPA，也没有连接你的 Jellyfin 或在 iPhone 上测试。** Windows 可完成 TypeScript 检查、逻辑测试和 iOS JS/Hermes 打包；原生编译必须在 macOS 上运行。`dist/` 是 JS 发布产物，不是安装包。
+**首个未签名 IPA 已在云端编译成功，但尚未连接你的 Jellyfin 或在 iPhone 上测试。** [源码仓库](https://github.com/oliverlorentino/ts_player)当前为公开仓库。[成功构建与制品](https://github.com/oliverlorentino/ts_player/actions/runs/42241661114)对应源码提交 `9477d759e8fab14707bbbd116a47a4c871645924`。Windows 本机安装包位于 `E:\ts_player\build\Still-unsigned.ipa`，安装步骤见 [INSTALL_IPHONE.md](INSTALL_IPHONE.md)。`dist/` 是 JS 发布产物，不是安装包。
 
-本机验证结果：TypeScript 检查通过，13 项自动化测试通过，iOS Hermes 发布包导出成功，Expo iOS 配置解析通过。Expo Doctor 为 16/17：剩余一项是 VLC 新架构兼容与旧图标包的目录元数据警告，详见下文。Windows 原生预生成被平台检查拒绝，尚未执行 Xcode 编译。
+验证结果：TypeScript 检查通过，13 项自动化测试通过，iOS Hermes 发布包导出成功，Expo iOS 配置解析通过。云端 Xcode 16.4 真机 Release 编译、IPA 打包和制品上传全部成功；本地校验了制品 SHA-256、ZIP 完整性、arm64 可执行文件和内置 JS 包。最低 iOS 版本为 15.1。Expo Doctor 为 16/17：剩余一项是 VLC 新架构兼容与旧图标包的目录元数据警告，详见下文。
 
 ## Windows 本地开发
 
@@ -36,7 +36,7 @@ VLC 是自定义原生模块，**不能用 Expo Go 测试这个播放器**。侧
 6. 将 IPA 传到 iPhone“文件”中，用 AltStore 的 My Apps → `+` 选择文件，用你自己的免费 Apple ID 签名安装。Apple ID 只输入到你信任的签名工具，**不要发到聊天、仓库或工作流里**。
 7. 免费签名通常 7 天到期，需要刷新；AltStore 可以在与 AltServer 连接条件满足时自动刷新。免费账号还有同时安装 App 数量限制，详见 [AltStore 官方说明](https://faq.altstore.io/altstore-classic/your-altstore)。
 
-这条路线免苹果开发者年费，但 GitHub macOS 构建额度/费用取决于你的 GitHub 套餐与仓库设置。未越狱 iPhone 不能跳过签名。工作流已配置，但仍需第一次真实云构建确认 Xcode、CocoaPods 与 VLC 二进制兼容性。
+这条路线免苹果开发者年费，但 GitHub macOS 构建额度/费用取决于你的 GitHub 套餐与仓库设置。未越狱 iPhone 不能跳过签名。工作流已完成首次真实云构建；后续修改主分支中的源码或构建配置会自动重新构建，也可手动运行。GitHub 制品保留 7 天，本机已保存首个 IPA。
 
 如果已经有付费开发者账号，可用 `eas.json` 的 `development` 或 `preview` 构建，通过 EAS 进行签名与设备分发；先在自己的终端完成 EAS 登录、项目关联和设备注册，再运行 `npm run ios:build`。此路线不作为免费侧载的前置要求。
 
